@@ -16,9 +16,9 @@ router.get("/", getPeliculas);
 
 router.get("/:peliculaId", getPeliculaById);
 
-router.post('/:usuarioId/like/:peliculaId', [verifyToken], likePelicula);
+router.post('/:userId/like/:peliculaId', [verifyToken], likePelicula);
 
-router.delete('/:usuarioId/unlike/:peliculaId', [verifyToken], unlikePelicula);
+router.delete('/:userId/unlike/:peliculaId', [verifyToken], unlikePelicula);
 
 router.post("/", [verifyToken, isModerator], createPelicula);
 

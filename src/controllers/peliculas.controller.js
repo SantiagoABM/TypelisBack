@@ -34,6 +34,8 @@ module.exports = {
             const peliculaId = req.params.peliculaId;
             const userId = req.params.userId;
 
+            console.log(peliculaId);
+            console.log(userId);
             // Buscar la película por su ID
             const pelicula = await Pelicula.findById(peliculaId);
 
@@ -54,7 +56,7 @@ module.exports = {
             await pelicula.save();
 
             // Actualizar el documento de usuario marcando la película como favorita
-            await User.findByIdAndUpdate(userId, { $addToSet: { favoritas: peliculaId } });
+            await User.findByIdAndUpdate(userId, { $addToSet: { favoritos: peliculaId } });
 
             res.status(200).json({ message: 'Like agregado exitosamente' });
         } catch (error) {

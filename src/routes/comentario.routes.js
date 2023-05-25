@@ -5,7 +5,7 @@ import {
   } from "../controllers/comentario.controller.js";
 
 /* GET users listing. */
-router.get('/pelicula/:peliculaId/listar', function(req, res) {
+router.get('/:peliculaId/listar', function(req, res) {
     controller.show(req, res);
 });
 

@@ -33,10 +33,10 @@ const peliculaSchema = new Schema({
         type: String,
         required: true
     },
-    likes: {
+    likes: [{
         ref: "User",
         type: Schema.Types.ObjectId
-    },
+    }],
     comentarios: []
 }, {
     timestamps: true,
