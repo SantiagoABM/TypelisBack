@@ -5,4 +5,4 @@ import "./libs/initialSetup";
 
 app.listen(PORT);
 
-console.log('server on port', app.get("port"));
+console.log('server on port', PORT);

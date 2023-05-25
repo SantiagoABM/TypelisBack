@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getPeliculas,
-  createPelicuas,
+  createPelicula,
   updatePeliculaById,
   deletePeliculaById,
   getPeliculaById,
@@ -18,9 +18,9 @@ router.get("/:peliculaId", getPeliculaById);
 
 router.post('/:usuarioId/like/:peliculaId', [verifyToken], likePelicula);
 
-router.post('/:usuarioId/unlike/:peliculaId', [verifyToken], unlikePelicula);
+router.delete('/:usuarioId/unlike/:peliculaId', [verifyToken], unlikePelicula);
 
-router.post("/", [verifyToken, isModerator], createPelicuas);
+router.post("/", [verifyToken, isModerator], createPelicula);
 
 router.put("/:peliculaId", [verifyToken, isModerator], updatePeliculaById);
 
