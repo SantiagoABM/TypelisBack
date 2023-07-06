@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import Role from "../models/Role.js";
+import Pelicula from "../models/Pelicula.js";
+
 
 export const createUser = async (req, res) => {
   try {
@@ -31,13 +33,26 @@ export const createUser = async (req, res) => {
     console.error(error);
   }
 };
-
 export const getUsers = async (req, res) => {
-  const users = await User.find();
-  return res.json(users);
+  try {
+    const users = await User.find().populate('roles', 'name').populate('favoritos', 'name');
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener la lista de usuarios' });
+  }
+};
+export const getUser = async (req, res) => {
+  try {
+    console.log(req.params)
+    const user = await User.findById(req.params.userId);
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ error: 'Error del servidor' });
+  }
 };
 
-export const getUser = async (req, res) => {
-  const user = await User.findById(req.params.userId);
-  return res.json(user);
-};
+

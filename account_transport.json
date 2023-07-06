@@ -1,0 +1,10 @@
+{
+    "service": "gmail",
+    "auth": {
+      "type": "OAuth2",
+      "user": "barbozamujica109@gmail.com",
+      "clientId": "853241430419-9a68o2bhsap743748vgsmh7de6ksmffm.apps.googleusercontent.com",
+      "clientSecret": "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",
+      "refreshToken": "1//04f8Tn8mCxruKCgYIARAAGAQSNgF-L9IrqDzgsjyD4ZbX5J_YfzMuUZ00DxgwAZWp3S51s7QXoPkmk9dy7R5jv7xMkF26TXVQ0w"
+    }
+  }

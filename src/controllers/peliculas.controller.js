@@ -3,57 +3,112 @@ import User from '../models/User';
 
 module.exports = {
     createPelicula: async (req, res) => {
-        const { name, descripcion, actores, genero, year, imgURL, videoURL } = req.body
 
-        const newPelicula = new Pelicula({ name, descripcion, actores, genero, year, imgURL, videoURL });
+        const pelicula = new Pelicula();
+        pelicula.name = req.body.name;
+        pelicula.descripcion = req.body.descripcion;
+        pelicula.director = req.body.director;
+        pelicula.year = req.body.year;
+        pelicula.genero = req.body.genero;
+        pelicula.imgURL = req.body.imgURL;
+        pelicula.actores = req.body.actores;
+        pelicula.videoURL = req.body.videoURL;
+        pelicula.vistas = req.body.vistas;
+        pelicula.likes = req.body.likes;
 
-        const peliculaSaved = await newPelicula.save();
-
-        res.status(201).json(peliculaSaved)
+        console.log(pelicula)
+        try {
+            const peliculaSaved = await pelicula.save();
+            res.status(201).json(peliculaSaved);
+        } catch (error) {
+            res.status(500).json({ error: 'Error al guardar la película' });
+        }
     },
+
     getPeliculas: async (req, res) => {
-        const peliculas = await Pelicula.find();
-        res.json(peliculas);
+        try {
+            const peliculas = await Pelicula.find();
+
+            if (peliculas.length === 0) {
+                return res.status(404).json({ mensaje: 'No se encontraron películas' });
+            }
+
+            res.status(200).json(peliculas);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ mensaje: 'Error al obtener las películas' });
+        }
     },
+
     getPeliculaById: async (req, res) => {
-        const pelicula = await Pelicula.findById(req.params.peliculaId);
-        res.status(200).json(pelicula);
+        try {
+            const pelicula = await Pelicula.findById(req.params.peliculaId);
+
+            if (!pelicula) {
+                return res.status(404).json({ mensaje: 'Pelicula no encontrada' });
+            }
+
+            res.status(200).json(pelicula);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ mensaje: 'Error al obtener la pelicula' });
+        }
     },
     updatePeliculaById: async (req, res) => {
-        const updatePelicula = await Pelicula.findByIdAndUpdate(req.params.peliculaId, req.body, { new: true });
-        res.status(200).json(updatePelicula);
+        try {
+            const updatePelicula = await Pelicula.findByIdAndUpdate(
+                req.params.peliculaId,
+                req.body,
+                { new: true }
+            );
 
+            res.status(200).json(updatePelicula);
+        } catch (error) {
+            res.status(500).json({ error: 'Error al actualizar la película' });
+        }
     },
     deletePeliculaById: async (req, res) => {
         const { peliculaId } = req.params;
         await Pelicula.findByIdAndDelete(peliculaId);
         res.status(204).json();
     },
-    likePelicula: async (req, res) => {
-        try {
-            const peliculaId = req.params.peliculaId;
-            const userId = req.params.userId;
+    reproducirPelicula: async (req, res) => {
+        const peliculaId = req.params.peliculaId;
+        const usuarioId = req.params.usuarioId;
 
-            console.log(peliculaId);
-            console.log(userId);
+        try {
+            // Incrementar el contador de vistas de la película
+            await Pelicula.findByIdAndUpdate(peliculaId, { $inc: { vistas: 1 } });
+
+            // Agregar el ID de la película al array de vistos del usuario
+            await User.findByIdAndUpdate(usuarioId, { $addToSet: { vistos: peliculaId } });
+
+            res.status(200).json({ message: 'Película reproducida correctamente' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Error al reproducir la película' });
+        }
+    },
+    likePelicula: async (req, res) => {
+        const peliculaId = req.params.peliculaId;
+        const userId = req.params.userId;
+        try {
+
             // Buscar la película por su ID
-            const pelicula = await Pelicula.findById(peliculaId);
+            const peli = await Pelicula.findById(peliculaId);
+            const userPeliculaLike = await User.findById(userId);
 
             // Verificar si la película existe
-            if (!pelicula) {
+            if (!peli) {
                 return res.status(404).json({ message: 'Película no encontrada' });
             }
-
             // Verificar si el usuario ya ha dado like a la película
-            if (pelicula.likes.includes(userId)) {
+            if (userPeliculaLike.favoritos.includes(peli)) {
                 return res.status(400).json({ message: 'Ya has dado like a esta película' });
             }
 
-            // Agregar el ID del usuario a los likes de la película
-            pelicula.likes.push(userId);
-
-            // Guardar los cambios en la película
-            await pelicula.save();
+            // Incrementar el contador de likes de la película
+            await Pelicula.findByIdAndUpdate(peliculaId, { $inc: { likes: 1 } });
 
             // Actualizar el documento de usuario marcando la película como favorita
             await User.findByIdAndUpdate(userId, { $addToSet: { favoritos: peliculaId } });
@@ -66,36 +121,36 @@ module.exports = {
     },
 
     unlikePelicula: async (req, res) => {
+
+        const peliculaId = req.params.peliculaId;
+        const userId = req.params.userId;
         try {
-            const peliculaId = req.params.peliculaId;
-            const userId = req.params.userId;
 
             // Buscar la película por su ID
-            const pelicula = await Pelicula.findById(peliculaId);
+            const peli = await Pelicula.findById(peliculaId);
+            const userPeliculaLike = await User.findById(userId);
 
             // Verificar si la película existe
-            if (!pelicula) {
+            if (!peli) {
                 return res.status(404).json({ message: 'Película no encontrada' });
             }
-
-            // Verificar si el usuario ha dado like a la película
-            if (!pelicula.likes.includes(userId)) {
-                return res.status(400).json({ message: 'No has dado like a esta película' });
+            // Verificar si el usuario ya ha dado like a la película
+            if (userPeliculaLike.favoritos.includes(peli)) {
+                return res.status(400).json({ message: 'No le has dado like a esta película' });
             }
 
-            // Quitar el ID del usuario de los likes de la película
-            pelicula.likes.pull(userId);
+            // Incrementar el contador de likes de la película
+            await Pelicula.findByIdAndUpdate(peliculaId, { $inc: { likes: -1 } });
 
-            // Guardar los cambios en la película
-            await pelicula.save();
+            // Actualizar el documento de usuario marcando la película como favorita
+            await User.findByIdAndUpdate(userId, { $pull: { favoritos: peliculaId } });
 
-            // Actualizar el documento de usuario eliminando la película de las favoritas
-            await User.findByIdAndUpdate(userId, { $pull: { favoritas: peliculaId } });
-
-            res.status(200).json({ message: 'Like removido exitosamente' });
+            res.status(200).json({ message: 'Dislike agregado exitosamente' });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Error al remover el like de la película' });
+            res.status(500).json({ message: 'Error al quitar like a la película' });
         }
-    }
+    },
+
+
 }

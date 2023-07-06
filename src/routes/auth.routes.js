@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  updatePassword,
   signinHandler,
   signupHandler,
 } from "../controllers/auth.controller.js";
@@ -7,6 +8,7 @@ import {
   checkExistingRole,
   checkExistingUser,
 } from "../middlewares/verifySignup.js";
+import { verifyToken } from "../middlewares/authJwt.js";
 
 const router = Router();
 
@@ -21,5 +23,6 @@ router.use((req, res, next) => {
 router.post("/signup", [checkExistingUser, checkExistingRole], signupHandler);
 
 router.post("/signin", signinHandler);
+router.put("/update-password", [verifyToken], updatePassword)
 
 export default router;

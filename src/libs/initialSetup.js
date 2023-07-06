@@ -12,10 +12,10 @@ export const createRoles = async () => {
 
     // Create default Roles
     const values = await Promise.all([
-      new Role({ name: "user" }).save(),
       new Role({ name: "moderator" }).save(),
       new Role({ name: "admin" }).save(),
       new Role({ name: "premium" }).save(),
+      new Role({ name: "user"})
     ]);
 
     console.log(values);
@@ -47,7 +47,7 @@ export const createGeneros = async () => {
         new Genero({ name: "Misterio" }).save(),
         new Genero({ name: "Musical" }).save(),
         new Genero({ name: "Histórico" }).save(),
-        new Genero({ name: "Animación" }).save(),
+        new Genero({ name: "Animación" }).save()
       ]);
   
       console.log(values);
@@ -63,7 +63,7 @@ export const createAdmin = async () => {
   if (userFound) return;
 
   // get roles _id
-  const roles = await Role.find({ name: { $in: ["admin", "moderator", "premium"] } });
+  const roles = await Role.find({ name: { $in: ["admin", "moderator", "premium", "user"] } });
 
   // create a new admin user
   const newUser = await User.create({
@@ -75,6 +75,7 @@ export const createAdmin = async () => {
 
   console.log(`new user created: ${newUser.email}`);
 };
+
 
 createGeneros();
 createRoles();

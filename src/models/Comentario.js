@@ -11,6 +11,7 @@ const comentarioSchema = new Schema({
         default: () => new Date().getDate()
     }
 }, {
+    timestamps: true,
     versionKey: false
 })
 

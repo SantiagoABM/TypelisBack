@@ -18,12 +18,21 @@ const actorSchema = new Schema(
             type: String,
             required: true
         },
+        lenguaje: {
+            type: String,
+            required: true
+        }, 
+        imgURL:{
+            type: String,
+            required: true
+        },
         peliculas: [{
             ref: "Pelicula",
             type: Schema.Types.ObjectId
         }]
 
     }, {
+        timestamps: true,
         versionKey: false
     }
 );

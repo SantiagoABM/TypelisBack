@@ -4,53 +4,88 @@ import { SECRET } from '../config';
 import Role from '../models/Role';
 
 
-export const signupHandler = async (req, res) =>{
-    try {
-        const { username, email, password, roles } = req.body;
-        console.log(username)
-        // Creating a new User Object
-        const newUser = new User({
-          username,
-          email,
-          password
-        });
+export const signupHandler = async (req, res) => {
+  try {
+    const { username, email, password, roles } = req.body;
+    console.log(username)
+    // Creating a new User Object
+    const newUser = new User({
+      username,
+      email,
+      password
+    });
 
-        console.log(newUser)
-    
-        // checking for roles
-        if (roles) {
-          const foundRoles = await Role.find({ name: { $in: roles } });
-          newUser.roles = foundRoles.map((role) => role._id);
-        } else {
-          const role = await Role.findOne({ name: "user" });
-          newUser.roles = [role._id];
-        }
-        // Saving the User Object in Mongodb
-        const savedUser = await newUser.save();
-        
-        // Create a token
-        const token = jwt.sign({ id: savedUser._id }, SECRET, {
-          expiresIn: 86400, // 24 hours
-        });
-    
-        return res.status(200).json({ token });
-      } catch (error) {
-        return res.status(500).json(error.message);
-      }
+    console.log(newUser)
+
+    if (roles) {
+      const foundRoles = await Role.find({ name: { $in: roles } });
+      newUser.roles = foundRoles.map((role) => role._id);
+    } else {
+      const role = await Role.findOne({ name: "user" });
+      newUser.roles = [role._id];
+    }
+    // Saving the User Object in Mongodb
+    const savedUser = await newUser.save();
+    const roleNames = userFound.roles.map(role => role.name); 
+
+    const tokenPayload = {
+      id: savedUser._id,
+      name: savedUser.username,
+      role: roleNames 
     };
-export const signinHandler = async (req, res) =>{
-    const userFound = await User.findOne({email: req.body.email}).populate("roles");
+    // Create a token
+    const token = jwt.sign(tokenPayload, SECRET, {
+      expiresIn: 43200, 
+    });
 
-    if(!userFound) return res.status(400).json({message: "User not found"})
+    return res.status(200).json({ token });
+  } catch (error) {
+    return res.status(500).json({error, message: ''});
+  }
+};
+export const signinHandler = async (req, res) => {
+  const userFound = await User.findOne({ email: req.body.email }).populate("roles");
 
-    const matchPassword = await User.comparePassword(req.body.password, userFound.password);
+  if (!userFound) return res.status(400).json({ message: "User not found" })
 
-    if(!matchPassword) return res.status(401).json({token: null, message: 'Invalid password'});
+  const matchPassword = await User.comparePassword(req.body.password, userFound.password);
 
-    const token = jwt.sign({id: userFound._id}, SECRET, {
-        expiresIn: 86400
-    })
+  if (!matchPassword) return res.status(401).json({ token: null, message: 'Invalid password' });
 
-    res.json({token})
+  const roleNames = userFound.roles.map(role => role.name);
+
+  const tokenPayload = {
+    id: userFound._id,
+    name: userFound.username,
+    role: roleNames 
+  };
+
+  const token = jwt.sign(tokenPayload, SECRET, {
+    expiresIn: 86400
+  })
+
+  res.json({ token })
 
 }
+export const updatePassword = async (req, res) => {
+  const { userId, newPassword } = req.body;
+
+  try {
+    // Buscar el usuario por su ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Generar el hash de la nueva contraseña
+    const newPasswordHash = await User.encryptPassword(newPassword);
+
+    // Actualizar la contraseña del usuario
+    user.password = newPasswordHash;
+    await user.save();
+
+    return res.status(200).json({ message: "Contraseña actualizada exitosamente" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error al actualizar la contraseña" });
+  }
+};

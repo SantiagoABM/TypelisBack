@@ -6,7 +6,7 @@ const peliculaSchema = new Schema({
         required: true
     },
     director: {
-        type: String,
+        type: String,   
         require: true
     },
     actores: [{
@@ -23,21 +23,24 @@ const peliculaSchema = new Schema({
     },
     year: {
         type: Number,
-        default: () => new Date().getFullYear()
+        default: 0
     },
     imgURL: {
-        type: String,
-        required: true
+        type: String
     },
     videoURL: {
         type: String,
         required: true
     },
-    likes: [{
-        ref: "User",
-        type: Schema.Types.ObjectId
-    }],
-    comentarios: []
+    likes: {
+        type: Number,
+        default: 0
+    },
+    comentarios: [],
+    vistas: {
+        type: Number,
+        default: 0
+    },
 }, {
     timestamps: true,
     versionKey: false

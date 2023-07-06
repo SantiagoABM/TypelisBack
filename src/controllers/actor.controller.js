@@ -1,32 +1,73 @@
 import Actor from '../models/Actor';
 
 module.exports ={
-    createActor: async(req, res) =>{
-        const {name, descripcion, age, ciudad, peliculas} = req.body
-        
-        const newActor = new Actor({name, descripcion, age, ciudad, peliculas});
+    createActor: async (req, res) => {
+        try {
+          const { name, descripcion, age, ciudad, imgURL, lenguaje } = req.body;
+      
+          // Validar que los campos requeridos estén presentes
+      
+          const newActor = new Actor({ name, descripcion, age, ciudad, imgURL, lenguaje });
+      
+          const actorSaved = await newActor.save();
+      
+          res.status(201).json(actorSaved);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Ocurrió un error en el servidor' });
+        }
+      },
+      
+      getActores: async (req, res) => {
+        try {
+          const actores = await Actor.find();
+          res.json(actores);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Ocurrió un error en el servidor' });
+        }
+      },
+      
+      getActorById: async (req, res) => {
+        try {
+          const actor = await Actor.findById(req.params.actorId);
+          if (!actor) {
+            return res.status(404).json({ error: 'Actor no encontrado' });
+          }
+          res.status(200).json(actor);
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Ocurrió un error en el servidor' });
+        }
+      },
+      
+      updateActorById: async (req, res) => {
+        try {
+            const updateActor = await Actor.findByIdAndUpdate(
+                req.params.peliculaId,
+                req.body,
+                { new: true }
+            );
 
-        const actorsaved = await newActor.save();
-
-        res.status(201).json(actorsaved)
-    },
-    getActores: async(req, res)=>{
-        const actores = await Actor.find();
-        res.json(actores);
-    },
-    getActorById: async(req, res)=>{
-        const actor = await Actor.findById(req.params.actorId);
-        res.status(200).json(actor);
-    },
-    updateActorById: async(req, res)=>{
-        const updateActor = await Actor.findByIdAndUpdate(req.params.actorId, req.body, {new: true});
-        res.status(200).json(updateActor);
-
-    },
-    deleteActorById: async(req, res)=>{
-        const {actorId} = req.params;
-        await Actor.findByIdAndDelete(actorId);
-        res.status(204).json();
-    }
+            res.status(200).json(updateActor);
+        } catch (error) {
+            res.status(500).json({ error: 'Error al actualizar al actor' });
+        }
+      },
+      
+      deleteActorById: async (req, res) => {
+        try {
+          const { actorId } = req.params;
+          const actor = await Actor.findByIdAndDelete(actorId);
+          if (!actor) {
+            return res.status(404).json({ error: 'Actor no encontrado' });
+          }
+          res.status(204).json();
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Ocurrió un error en el servidor' });
+        }
+      }
+      
 
 }

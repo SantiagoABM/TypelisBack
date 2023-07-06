@@ -1,10 +1,14 @@
 import {Schema, model} from 'mongoose';
 
-export const ROLES = ["user", "admin", "moderator"];
+export const ROLES = [ "admin", "moderator", "premium"];
 
 const roleSchema = new Schema(
     {
         name: String,
+        usuarios:{
+            ref:'user',
+            type: Schema.Types.ObjectId
+        }
     }, {
         versionKey: false
     }

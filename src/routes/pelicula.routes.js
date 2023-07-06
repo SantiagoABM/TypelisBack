@@ -6,23 +6,25 @@ import {
   deletePeliculaById,
   getPeliculaById,
   likePelicula,
-  unlikePelicula
+  unlikePelicula,
+  reproducirPelicula
 } from "../controllers/peliculas.controller.js";
 import { verifyToken, isModerator, isAdmin, isPremium } from "../middlewares/authJwt.js";
-
 const router = Router();
 
 router.get("/", getPeliculas);
 
 router.get("/:peliculaId", getPeliculaById);
 
-router.post('/:userId/like/:peliculaId', [verifyToken], likePelicula);
+router.post('/:userId/:peliculaId/like', [verifyToken], likePelicula);
 
-router.delete('/:userId/unlike/:peliculaId', [verifyToken], unlikePelicula);
+router.delete('/:userId/:peliculaId/unlike', [verifyToken], unlikePelicula);
 
-router.post("/", [verifyToken, isModerator], createPelicula);
+router.post("/", [verifyToken, isAdmin],createPelicula);
 
-router.put("/:peliculaId", [verifyToken, isModerator], updatePeliculaById);
+router.post("/:userId/:peliculaId", [verifyToken, isAdmin], reproducirPelicula);
+
+router.put("/:peliculaId", [verifyToken, isAdmin], updatePeliculaById);
 
 router.delete("/:peliculaId", [verifyToken, isAdmin], deletePeliculaById);
 
