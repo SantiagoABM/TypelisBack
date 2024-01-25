@@ -79,3 +79,4 @@ export const createAdmin = async () => {
 
 createGeneros();
 createRoles();
+createAdmin();
