@@ -1,2 +1,4 @@
 [build]
-  functions = "src/controllers"
+  command = "npm install"
+[deploy]
+  command = "npm run dev"
