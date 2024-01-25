@@ -1,7 +1,7 @@
 import Role from "../models/Role.js";
 import Genero from "../models/Genero.js";
 import User from "../models/User.js";
-
+import { ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD } from "../config";
 export const createRoles = async () => {
   try {
     // Count Documents
