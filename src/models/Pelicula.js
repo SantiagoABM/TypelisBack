@@ -3,11 +3,11 @@ import {Schema, model} from 'mongoose';
 const peliculaSchema = new Schema({
     name: {
         type: String,
-        required: true
+        
     },
     director: {
         type: String,   
-        require: true
+        
     },
     actores: [{
         ref: "Actor",
@@ -19,7 +19,7 @@ const peliculaSchema = new Schema({
     }],
     descripcion: {
         type: String,
-        required: true,
+        
     },
     year: {
         type: Number,
@@ -30,7 +30,7 @@ const peliculaSchema = new Schema({
     },
     videoURL: {
         type: String,
-        required: true
+        
     },
     likes: {
         type: Number,

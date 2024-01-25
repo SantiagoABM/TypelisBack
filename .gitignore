@@ -2,3 +2,6 @@
 /build/
 /public/
 
+
+# Local Netlify folder
+.netlify

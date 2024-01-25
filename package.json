@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src --out-dir build",
+    "build": "netlify deploy --prod",
     "dev": "nodemon src/index.js --exec babel-node",
     "start": "node build/index.js"
   },

@@ -7,7 +7,6 @@ import Role from '../models/Role';
 export const signupHandler = async (req, res) => {
   try {
     const { username, email, password, roles } = req.body;
-    console.log(username)
     // Creating a new User Object
     const newUser = new User({
       username,
@@ -15,7 +14,6 @@ export const signupHandler = async (req, res) => {
       password
     });
 
-    console.log(newUser)
 
     if (roles) {
       const foundRoles = await Role.find({ name: { $in: roles } });
@@ -26,18 +24,19 @@ export const signupHandler = async (req, res) => {
     }
     // Saving the User Object in Mongodb
     const savedUser = await newUser.save();
-    const roleNames = userFound.roles.map(role => role.name); 
+    console.log(savedUser)
+    const roleNames = savedUser.roles.map(role => role.name); 
 
     const tokenPayload = {
       id: savedUser._id,
       name: savedUser.username,
       role: roleNames 
     };
+    console.log(tokenPayload || 'No hay token');
     // Create a token
     const token = jwt.sign(tokenPayload, SECRET, {
       expiresIn: 43200, 
     });
-
     return res.status(200).json({ token });
   } catch (error) {
     return res.status(500).json({error, message: ''});

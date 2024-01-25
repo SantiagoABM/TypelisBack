@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extend: false }));// analiza los datos codificados 
 //const storage = multer.diskStorage({
 //    destination: path.join(__dirname, 'uploads'), // guarda la imagen en la carpeta uploads
 //    filename: (req, file, cb, filename) =>  {
-//        cb(null, uuidv4() + path.extname(file.originalname));// se establece el nombre del archivo con uuid y su extensión del archivo
+//        cb(null, uuidv4() + path.extname(file.originalname));// se establece el nombre del archivo con uuid y su extensión del archivo    
 //    }
 //}) // guarda imágenes en una ruta con su nombre generado
 //app.use(multer({storage}).single('imgURL'));

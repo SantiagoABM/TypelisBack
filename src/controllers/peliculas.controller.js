@@ -1,8 +1,13 @@
+import multer from 'multer';
 import Pelicula from '../models/Pelicula';
 import User from '../models/User';
 
+
+
 module.exports = {
     createPelicula: async (req, res) => {
+
+        console.log(req.file)
 
         const pelicula = new Pelicula();
         pelicula.name = req.body.name;
@@ -10,7 +15,7 @@ module.exports = {
         pelicula.director = req.body.director;
         pelicula.year = req.body.year;
         pelicula.genero = req.body.genero;
-        pelicula.imgURL = req.body.imgURL;
+        pelicula.imgURL = req.file.path;
         pelicula.actores = req.body.actores;
         pelicula.videoURL = req.body.videoURL;
         pelicula.vistas = req.body.vistas;
@@ -21,6 +26,7 @@ module.exports = {
             const peliculaSaved = await pelicula.save();
             res.status(201).json(peliculaSaved);
         } catch (error) {
+            console.error(error)
             res.status(500).json({ error: 'Error al guardar la película' });
         }
     },
@@ -72,6 +78,19 @@ module.exports = {
         await Pelicula.findByIdAndDelete(peliculaId);
         res.status(204).json();
     },
+    obtenerPeliculasConMasLikes: async (req, res) => {
+        try {
+            const peliculas = await Pelicula.find()
+                .sort({ likes: -1 })
+                .limit(10)
+                .exec();
+
+            res.json(peliculas);
+        } catch (error) {
+            console.error('Error al obtener las películas:', error);
+            res.status(500).json({ error: 'Error al obtener las películas' });
+        }
+    },
     reproducirPelicula: async (req, res) => {
         const peliculaId = req.params.peliculaId;
         const usuarioId = req.params.usuarioId;
@@ -103,7 +122,7 @@ module.exports = {
                 return res.status(404).json({ message: 'Película no encontrada' });
             }
             // Verificar si el usuario ya ha dado like a la película
-            if (userPeliculaLike.favoritos.includes(peli)) {
+            if (userPeliculaLike.favoritos.includes(peliculaId)) {
                 return res.status(400).json({ message: 'Ya has dado like a esta película' });
             }
 
@@ -119,6 +138,32 @@ module.exports = {
             res.status(500).json({ message: 'Error al dar like a la película' });
         }
     },
+
+    obtenerPeliculasFavoritas: async (req, res) => {
+        const userId = req.params.userId; // ID del usuario proporcionado en la ruta
+      
+        try {
+          // Buscar el usuario por su ID
+          const usuario = await User.findById(userId);
+      
+          if (!usuario) {
+            res.status(404).json({ mensaje: 'Usuario no encontrado' });
+          }
+      
+          // Obtener los IDs de las películas favoritas del usuario
+          const peliculasFavoritasIds = usuario.favoritos;
+      
+          // Buscar las películas favoritas por los IDs
+          const peliculasFavoritas = await Pelicula.find({
+            _id: { $in: peliculasFavoritasIds }
+          });
+      
+          res.status(200).json(peliculasFavoritas.reverse());
+        } catch (error) {
+          console.error('Error al obtener las películas favoritas:', error);
+          res.status(500).json({ error: 'Error al obtener las películas favoritas' });
+        }
+      },
 
     unlikePelicula: async (req, res) => {
 
