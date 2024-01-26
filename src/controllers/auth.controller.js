@@ -51,12 +51,12 @@ export const signinHandler = async (req, res) => {
 
   if (!matchPassword) return res.status(401).json({ token: null, message: 'Invalid password' });
 
-  const roleNames = userFound.roles.map(role => role._id);
+  const roleNames = userFound.roles.map(role => role.name);
 
   const tokenPayload = {
     id: userFound._id,
     name: userFound.username,
-    role: roleNames 
+    role: roleNames
   };
 
   const token = jwt.sign(tokenPayload, SECRET, {

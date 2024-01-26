@@ -40,7 +40,7 @@ router.post('/:userId/:peliculaId/like', [verifyToken], likePelicula);
 
 router.delete('/:userId/:peliculaId/unlike', [verifyToken], unlikePelicula);
 
-router.post("/",  [verifyToken, isAdmin], upload.single('imgURL'),createPelicula);
+router.post("/",  [verifyToken, isAdmin],createPelicula);
 
 router.post("/:userId/:peliculaId", [verifyToken, isAdmin], reproducirPelicula);
 
