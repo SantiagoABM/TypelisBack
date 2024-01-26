@@ -2,3 +2,5 @@
   command = "npm install"
 [deploy]
   command = "npm run dev"
+[functions]
+  function = "npm run dev"

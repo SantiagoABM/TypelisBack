@@ -51,7 +51,7 @@ export const signinHandler = async (req, res) => {
 
   if (!matchPassword) return res.status(401).json({ token: null, message: 'Invalid password' });
 
-  const roleNames = userFound.roles.map(role => role.name);
+  const roleNames = userFound.roles.map(role => role._id);
 
   const tokenPayload = {
     id: userFound._id,

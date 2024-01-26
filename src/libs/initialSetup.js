@@ -63,20 +63,19 @@ export const createAdmin = async () => {
   if (userFound) return;
 
   // get roles _id
-  const roles = await Role.find({ name: { $in: ["admin", "moderator", "premium", "user"] } });
-
+  const roles = await Role.find({ name: { $in: ["admin", "moderator", "premium"] } });
+  console.log(roles);
   // create a new admin user
   const newUser = await User.create({
     username: ADMIN_USERNAME,
     email: ADMIN_EMAIL,
     password: ADMIN_PASSWORD,
-    roles: roles.map((role) => role._id),
+    roles: ["65b30b9f697d507493e97fa1", "65b30b9f697d507493e97fa2", "65b30b9f697d507493e97fa0"],
   });
-
   console.log(`new user created: ${newUser.email}`);
 };
 
 
 createGeneros();
 createRoles();
-createAdmin();
+createAdmin(); 
