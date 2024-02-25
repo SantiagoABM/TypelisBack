@@ -5,3 +5,8 @@
 
 # Local Netlify folder
 .netlify
+ngrok.exe
+notas.txt
+account_transport.json
+fizz_buzz.py
+firebase-debug.log

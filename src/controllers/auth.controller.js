@@ -25,12 +25,12 @@ export const signupHandler = async (req, res) => {
     // Saving the User Object in Mongodb
     const savedUser = await newUser.save();
     console.log(savedUser)
-    const roleNames = savedUser.roles.map(role => role.name); 
+    const rolesId = savedUser.roles.map(role => role._id); 
 
     const tokenPayload = {
       id: savedUser._id,
       name: savedUser.username,
-      role: roleNames 
+      roles: rolesId
     };
     console.log(tokenPayload || 'No hay token');
     // Create a token
