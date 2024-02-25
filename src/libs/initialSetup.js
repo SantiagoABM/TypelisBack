@@ -1,7 +1,7 @@
 import Role from "../models/Role.js";
 import Genero from "../models/Genero.js";
 import User from "../models/User.js";
-import { ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD } from "../config";
+import { ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD, ROLES } from "../config";
 export const createRoles = async () => {
   try {
     // Count Documents
@@ -15,10 +15,12 @@ export const createRoles = async () => {
       new Role({ name: "moderator" }).save(),
       new Role({ name: "admin" }).save(),
       new Role({ name: "premium" }).save(),
-      new Role({ name: "user"})
+      new Role({ name: "user"}).save(),
     ]);
 
     console.log(values);
+    createAdmin(); 
+
   } catch (error) {
     console.error(error);
   }
@@ -63,19 +65,19 @@ export const createAdmin = async () => {
   if (userFound) return;
 
   // get roles _id
-  const roles = await Role.find({ name: { $in: ["admin", "moderator", "premium"] } });
-  console.log(roles);
+  const roles = await Role.find({ name: { $in: ROLES } });
+  
+  const rolesIds = roles.map(role => role._id);
+  console.log(rolesIds);
   // create a new admin user
   const newUser = await User.create({
     username: ADMIN_USERNAME,
     email: ADMIN_EMAIL,
     password: ADMIN_PASSWORD,
-    roles: ["65b30b9f697d507493e97fa1", "65b30b9f697d507493e97fa2", "65b30b9f697d507493e97fa0"],
+    roles: rolesIds,
   });
   console.log(`new user created: ${newUser.email}`);
 };
 
-
 createGeneros();
 createRoles();
-createAdmin(); 
